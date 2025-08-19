@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Anuncios con IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.4.1/dist/html-docx.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+        
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid orange;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: orange; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse-button {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .ad-preview {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            background: white;
+            line-height: 1.6;
+        }
+
+        .ad-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .ad-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .contact-info {
+            background-color: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="mb-4">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/09df4bea-fda2-4f85-a7e0-ca986f80615d.png" alt="AI-powered logo with circuit brain pattern in bright blue and white colors representing artificial intelligence and automation" class="mx-auto rounded-full border-4 border-white shadow-lg">
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 typewriter">AnunciosIA Pro</h1>
+            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">
+                Genera anuncios profesionales y atractivos en segundos usando inteligencia artificial avanzada
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Form Section -->
+        <div id="formSection" class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-2xl card-shadow p-8 mb-8 fade-in">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-magic text-purple-600 mr-3"></i>
+                        Crear Nuevo Anuncio
+                    </h2>
+                    <p class="text-gray-600 text-lg">Completa los datos básicos y nuestra IA creará un anuncio increíble</p>
+                </div>
+
+                <form id="adForm" class="space-y-6">
+                    <!-- Tipo de Anuncio -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                <i class="fas fa-tag mr-2"></i>Tipo de Anuncio
+                            </label>
+                            <select id="adType" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition duration-200">
+                                <option value="">Selecciona una opción</option>
+                                <option value="venta">🏷️ Venta</option>
+                                <option value="alquiler">🏠 Alquiler</option>
+                                <option value="servicios">🔧 Servicios</option>
+                                <option value="trabajo">💼 Trabajo</option>
+                                <option value="vehiculos">🚗 Vehículos</option>
+                                <option value="inmuebles">🏢 Inmuebles</option>
+                                <option value="electronica">📱 Electrónicos</option>
+                                <option value="otros">📦 Otros</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                <i class="fas fa-list mr-2"></i>Categoría Específica
+                            </label>
+                            <input type="text" id="category" placeholder="Ej: Smartphone, Apartamento, Clases de guitarra..."
+                                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition duration-200">
+                        </div>
+                    </div>
+
+                    <!-- Título y Descripción Básica -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            <i class="fas fa-heading mr-2"></i>¿Qué vendes/ofreces? (Descripción breve)
+                        </label>
+                        <input type="text" id="basicDescription" placeholder="Ej: iPhone 14 Pro Max como nuevo, Apartamento 2 habitaciones centro..."
+                            class="w-full p-4 border border-gray-300 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition duration-200">
+                    </div>
+
+                    <!-- Precio y Ubicación -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                <i class="fas fa-dollar-sign mr-2"></i>Precio
+                            </label>
+                            <div class="relative">
+                                <input type="number" id="price" placeholder="0"
+                                    class="w-full p-4 pl-12 border border-gray-300 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition duration-200">
+                                <span class="absolute left-4 top-4 text-gray-500">$</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Ubicación
+                            </label>
+                            <input type="text" id="location" placeholder="Ciudad, Estado o País"
+                                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition duration-200">
+                        </div>
+                    </div>
+
+                    <!-- Información de Contacto -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                <i class="fas fa-user mr-2"></i>Nombre de Contacto
+                            </label>
+                            <input type="text" id="contactName" placeholder="Tu nombre o empresa"
+                                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition duration-200">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                <i class="fas fa-phone mr-2"></i>Teléfono de Contacto
+                            </label>
+                            <input type="tel" id="contactPhone" placeholder="Número de teléfono"
+                                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition duration-200">
+                        </div>
+                    </div>
+
+                    <!-- Características Adicionales -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            <i class="fas fa-star mr-2"></i>Características Destacadas (Opcional)
+                        </label>
+                        <textarea id="features" rows="3" placeholder="Ej: Excelente estado, garantía, accesorios incluidos..."
+                            class="w-full p-4 border border-gray-300 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition duration-200 resize-none"></textarea>
+                    </div>
+
+                    <!-- Botón Generar -->
+                    <div class="text-center pt-6">
+                        <button type="submit" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-10 py-4 rounded-full text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transform hover:scale-105 transition duration-300 shadow-lg pulse-button">
+                            <i class="fas fa-robot mr-3"></i>
+                            Generar Anuncio con IA
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loadingSection" class="max-w-4xl mx-auto hidden">
+            <div class="bg-white rounded-2xl card-shadow p-12 text-center">
+                <div class="mb-8">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b26662ec-d4cd-423b-8454-f0b71115488c.png" alt="AI brain with glowing neural networks processing data in purple and blue gradient colors" class="mx-auto rounded-full animate-spin">
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">
+                    IA Trabajando
+                    <span class="loading-dots"></span>
+                </h3>
+                <p class="text-gray-600 text-lg mb-6">Analizando tu información y generando el anuncio perfecto</p>
+                <div class="bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
+                    <div id="progressBar" class="bg-gradient-to-r from-purple-600 to-blue-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p id="loadingText" class="text-sm text-gray-500">Iniciando análisis...</p>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="max-w-4xl mx-auto hidden">
+            <div class="bg-white rounded-2xl card-shadow overflow-hidden">
+                <!-- Header del anuncio generado -->
+                <div class="bg-gradient-to-r from-green-500 to-teal-600 text-white p-6 text-center">
+                    <h3 class="text-2xl font-bold mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        ¡Anuncio Generado Exitosamente!
+                    </h3>
+                    <p class="opacity-90">Tu anuncio profesional está listo para publicar</p>
+                </div>
+
+                <!-- Preview del anuncio -->
+                <div class="p-8">
+                    <div id="adPreview" class="ad-preview mb-6">
+                        <!-- Título Principal -->
+                        <div class="ad-section">
+                            <h1 id="generatedTitle" class="text-3xl font-bold text-gray-900 mb-2"></h1>
+                            <p class="text-lg text-gray-600" id="generatedSubtitle"></p>
+                        </div>
+
+                        <!-- Precio Destacado -->
+                        <div class="ad-section">
+                            <div class="flex items-center gap-4">
+                                <span class="text-4xl font-bold text-green-600" id="generatedPrice"></span>
+                                <span class="text-sm text-gray-500" id="priceNote"></span>
+                            </div>
+                        </div>
+
+                        <!-- Descripción Principal -->
+                        <div class="ad-section">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">Descripción</h3>
+                            <p class="text-gray-700" id="generatedDescription"></p>
+                        </div>
+
+                        <!-- Características Destacadas -->
+                        <div class="ad-section">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">Características Destacadas</h3>
+                            <ul id="generatedFeatures" class="grid grid-cols-1 md:grid-cols-2 gap-2"></ul>
+                        </div>
+
+                        <!-- Ubicación -->
+                        <div class="ad-section">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">Ubicación</h3>
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                                <span id="generatedLocation"></span>
+                            </div>
+                        </div>
+
+                        <!-- Información de Contacto -->
+                        <div class="ad-section">
+                            <div class="contact-info">
+                                <h3 class="text-xl font-semibold text-gray-800 mb-3">Información de Contacto</h3>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-user mr-3 text-blue-600"></i>
+                                        <span id="contactNameDisplay" class="font-medium"></span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-phone mr-3 text-green-600"></i>
+                                        <span id="contactPhoneDisplay" class="font-medium"></span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 mt-3">
+                                        <i class="fas fa-clock mr-2"></i>
+                                        Publicado: <span id="publishDate"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Call to Action -->
+                        <div class="ad-section">
+                            <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-200">
+                                <p class="text-center text-gray-700 font-medium" id="callToAction"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <button onclick="copyToClipboard()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200">
+                            <i class="fas fa-copy mr-2"></i>Copiar Texto
+                        </button>
+                        <button onclick="exportToWord()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200">
+                            <i class="fas fa-file-word mr-2"></i>Exportar a Word
+                        </button>
+                        <button onclick="downloadTxt()" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition duration-200">
+                            <i class="fas fa-download mr-2"></i>Descargar TXT
+                        </button>
+                        <button onclick="shareAd()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition duration-200">
+                            <i class="fas fa-share mr-2"></i>Compartir
+                        </button>
+                        <button onclick="createNew()" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition duration-200">
+                            <i class="fas fa-plus mr-2"></i>Crear Nuevo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <div class="mb-4">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/0fa2de78-e8f3-4f76-b7a4-e697c0e00bbf.png" alt="Company footer logo with AI and technology themed design in white and gray colors" class="mx-auto rounded-full">
+            </div>
+            <p class="text-lg mb-2">AnunciosIA Pro - Powered by Advanced AI</p>
+            <p class="text-gray-400">Creando anuncios extraordinarios desde 2024</p>
+        </div>
+    </footer>
+
+    <script>
+        let generatedAdData = {};
+
+        // Simulación de datos de IA para diferentes categorías
+        const aiTemplates = {
+            venta: {
+                titles: [
+                    "¡Oferta Exclusiva! {item} en Perfecto Estado",
+                    "{item} de Calidad Premium - ¡No te lo Pierdas!",
+                    "Vendo {item} - Excelente Oportunidad",
+                    "¡Liquidación! {item} a Precio Increíble"
+                ],
+                subtitles: [
+                    "Oportunidad única de adquisición",
+                    "Calidad garantizada y precio justo",
+                    "Venta directa del propietario"
+                ],
+                descriptions: [
+                    "Aprovecha esta oportunidad única de adquirir {item} en excelentes condiciones. Perfectamente mantenido y con todas las funcionalidades operativas. Ideal para quienes buscan calidad a precio justo. Este producto ha sido cuidado con esmero y presenta características que lo destacan en el mercado.",
+                    "Se vende {item} en estado impecable. Ha sido cuidado con esmero y presenta mínimas señales de uso. Incluye accesorios originales y documentación completa. Una inversión inteligente para el comprador exigente que busca lo mejor.",
+                    "Excelente {item} disponible para venta inmediata. Perfecto funcionamiento garantizado. Producto de alta calidad que cumple con todas las expectativas. Ideal para uso personal o profesional."
+                ],
+                callToActions: [
+                    "¡No dejes pasar esta oportunidad! Contacta ahora mismo para más información.",
+                    "¡Últimas unidades disponibles! Llama hoy y asegura tu compra.",
+                    "¡Precio especial por tiempo limitado! Contacta para agendar una cita."
+                ]
+            },
+            alquiler: {
+                titles: [
+                    "Hermoso {item} en Alquiler - Zona Premium",
+                    "Alquilo {item} Completamente Equipado",
+                    "{item} Disponible para Renta Inmediata"
+                ],
+                subtitles: [
+                    "Disponible para ocupación inmediata",
+                    "Totalmente amueblado y equipado",
+                    "En la mejor zona de la ciudad"
+                ],
+                descriptions: [
+                    "Magnífico {item} disponible para alquiler en excelente ubicación. Completamente amueblado y con todas las comodidades modernas. Ambiente acogedor y bien iluminado, perfecto para familias o profesionales que buscan confort y tranquilidad.",
+                    "Se alquila {item} en perfectas condiciones, listo para habitar. Incluye servicios básicos y mantenimiento regular. Ideal para personas responsables que valoran la comodidad y la buena ubicación."
+                ],
+                callToActions: [
+                    "¡Agenda tu visita hoy mismo! Disponible para mudanza inmediata.",
+                    "¡Contrato flexible disponible! Llama para programar una visita.",
+                    "¡Excelente ubicación y precio! Contacta para más detalles."
+                ]
+            },
+            servicios: {
+                titles: [
+                    "Servicios Profesionales de {item}",
+                    "Experto en {item} - Calidad Garantizada",
+                    "{item} Profesional a tu Alcance"
+                ],
+                subtitles: [
+                    "Experiencia comprobada y resultados garantizados",
+                    "Servicio profesional y personalizado",
+                    "Precios competitivos y calidad superior"
+                ],
+                descriptions: [
+                    "Ofrezco servicios especializados en {item} con amplia experiencia y resultados comprobados. Trabajo responsable, puntual y con garantía de satisfacción. Me adapto a las necesidades específicas de cada cliente para brindar la mejor solución.",
+                    "Profesional certificado en {item} disponible para proyectos inmediatos. Precios competitivos y calidad superior en cada trabajo realizado. Compromiso total con la excelencia y la satisfacción del cliente."
+                ],
+                callToActions: [
+                    "¡Contacta para una cotización gratuita! Sin compromiso.",
+                    "¡Presupuesto sin costo! Llama y agenda tu consulta.",
+                    "¡Garantía en todos los trabajos! Solicita tu presupuesto hoy."
+                ]
+            }
+        };
+
+        // Event Listeners
+        document.getElementById('adForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateAd();
+        });
+
+        async function generateAd() {
+            // Recopilar datos del formulario
+            const formData = {
+                type: document.getElementById('adType').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('basicDescription').value,
+                price: document.getElementById('price').value,
+                location: document.getElementById('location').value,
+                features: document.getElementById('features').value,
+                contactName: document.getElementById('contactName').value,
+                contactPhone: document.getElementById('contactPhone').value
+            };
+
+            // Validar datos
+            if (!formData.type || !formData.category || !formData.description) {
+                alert('Por favor completa los campos obligatorios: Tipo de anuncio, Categoría y Descripción');
+                return;
+            }
+
+            // Mostrar loading
+            showLoading();
+
+            // Simular proceso de IA
+            await simulateAIProcess();
+
+            // Generar contenido
+            const generatedContent = await generateContent(formData);
+
+            // Mostrar resultado
+            showResult(generatedContent);
+        }
+
+        function showLoading() {
+            document.getElementById('formSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+
+            // Simular progreso
+            simulateProgress();
+        }
+
+        async function simulateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const loadingText = document.getElementById('loadingText');
+            
+            const steps = [
+                { progress: 15, text: "Analizando tipo de anuncio..." },
+                { progress: 30, text: "Generando título optimizado..." },
+                { progress: 50, text: "Creando descripción atractiva..." },
+                { progress: 70, text: "Añadiendo características destacadas..." },
+                { progress: 85, text: "Organizando información de contacto..." },
+                { progress: 100, text: "Finalizando anuncio profesional..." }
+            ];
+
+            for (let step of steps) {
+                await new Promise(resolve => setTimeout(resolve, 700));
+                progressBar.style.width = step.progress + '%';
+                loadingText.textContent = step.text;
+            }
+        }
+
+        async function simulateAIProcess() {
+            // Simular llamada a API de IA
+            return new Promise(resolve => setTimeout(resolve, 4200));
+        }
+
+        async function generateContent(formData) {
+            const templates = aiTemplates[formData.type] || aiTemplates.venta;
+            
+            // Generar título
+            const titleTemplate = templates.titles[Math.floor(Math.random() * templates.titles.length)];
+            const title = titleTemplate.replace('{item}', formData.category);
+
+            // Generar subtítulo
+            const subtitle = templates.subtitles[Math.floor(Math.random() * templates.subtitles.length)];
+
+            // Generar descripción
+            const descTemplate = templates.descriptions[Math.floor(Math.random() * templates.descriptions.length)];
+            let description = descTemplate.replace('{item}', formData.category);
+            
+            // Añadir características si las hay
+            if (formData.features) {
+                description += ` Características adicionales destacadas: ${formData.features}`;
+            }
+
+            // Generar características mejoradas con IA
+            const enhancedFeatures = generateEnhancedFeatures(formData);
+
+            // Formatear precio
+            const formattedPrice = formData.price ? 
+                `$${parseInt(formData.price).toLocaleString()}` : 
+                'Precio a consultar';
+
+            const priceNote = formData.price ? 
+                (formData.type === 'alquiler' ? 'por mes' : 'precio final') : 
+                'Contáctanos para más información';
+
+            // Generar call to action
+            const callToAction = templates.callToActions[Math.floor(Math.random() * templates.callToActions.length)];
+
+            // Fecha actual
+            const publishDate = new Date().toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            return {
+                title: title,
+                subtitle: subtitle,
+                description: description,
+                price: formattedPrice,
+                priceNote: priceNote,
+                location: formData.location || 'Ubicación a consultar',
+                features: enhancedFeatures,
+                contactName: formData.contactName || 'Vendedor',
+                contactPhone: formData.contactPhone || 'Teléfono a consultar',
+                callToAction: callToAction,
+                publishDate: publishDate,
+                formData: formData
+            };
+        }
+
+        function generateEnhancedFeatures(formData) {
+            const baseFeatures = [
+                'Excelente estado de conservación',
+                'Entrega inmediata disponible',
+                'Precio competitivo en el mercado',
+                'Atención personalizada'
+            ];
+
+            const typeSpecificFeatures = {
+                venta: ['Garantía incluida', 'Documentos en regla', 'Fotos reales del producto', 'Historial de mantenimiento'],
+                alquiler: ['Contrato flexible', 'Depósito accesible', 'Mantenimiento incluido', 'Servicios cercanos'],
+                servicios: ['Experiencia comprobada', 'Presupuesto sin compromiso', 'Trabajo garantizado', 'Referencias disponibles'],
+                vehiculos: ['Papeles al día', 'Mantenimiento reciente', 'Listo para transferir', 'Revisión técnica vigente'],
+                inmuebles: ['Ubicación privilegiada', 'Transporte cercano', 'Servicios completos', 'Documentos en regla'],
+                electronica: ['Funcionamiento perfecto', 'Accesorios originales', 'Caja y manuales', 'Garantía vigente'],
+                trabajo: ['Horario flexible', 'Ambiente laboral excelente', 'Oportunidades de crecimiento', 'Beneficios atractivos']
+            };
+
+            const specific = typeSpecificFeatures[formData.type] || typeSpecificFeatures.venta;
+            const allFeatures = [...baseFeatures, ...specific];
+
+            // Añadir características personalizadas si las hay
+            if (formData.features) {
+                const customFeatures = formData.features.split(',').map(f => f.trim()).filter(f => f.length > 0);
+                allFeatures.push(...customFeatures);
+            }
+
+            // Remover duplicados y tomar máximo 6 características
+            const uniqueFeatures = [...new Set(allFeatures)];
+            return uniqueFeatures.slice(0, 6);
+        }
+
+        function showResult(content) {
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.remove('hidden');
+
+            // Llenar contenido generado
+            document.getElementById('generatedTitle').textContent = content.title;
+            document.getElementById('generatedSubtitle').textContent = content.subtitle;
+            document.getElementById('generatedPrice').textContent = content.price;
+            document.getElementById('priceNote').textContent = content.priceNote;
+            document.getElementById('generatedDescription').textContent = content.description;
+            document.getElementById('generatedLocation').textContent = content.location;
+            document.getElementById('contactNameDisplay').textContent = content.contactName;
+            document.getElementById('contactPhoneDisplay').textContent = content.contactPhone;
+            document.getElementById('callToAction').textContent = content.callToAction;
+            document.getElementById('publishDate').textContent = content.publishDate;
+
+            // Mostrar características
+            const featuresContainer = document.getElementById('generatedFeatures');
+            featuresContainer.innerHTML = content.features.map(feature => 
+                `<li class="flex items-center text-gray-700">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>${feature}</span>
+                </li>`
+            ).join('');
+
+            // Guardar datos para funciones adicionales
+            generatedAdData = content;
+
+            // Scroll to result
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Funciones adicionales
+        function copyToClipboard() {
+            const adText = formatAdText();
+            
+            navigator.clipboard.writeText(adText).then(() => {
+                alert('¡Anuncio copiado al portapapeles!');
+            });
+        }
+
+        function formatAdText() {
+            const data = generatedAdData;
+            return `${data.title}
+${data.subtitle}
+
+PRECIO: ${data.price} ${data.priceNote}
+
+DESCRIPCIÓN:
+${data.description}
+
+CARACTERÍSTICAS DESTACADAS:
+${data.features.map(f => `• ${f}`).join('\n')}
+
+UBICACIÓN:
+📍 ${data.location}
+
+CONTACTO:
+👤 ${data.contactName}
+📞 ${data.contactPhone}
+
+${data.callToAction}
+
+Publicado: ${data.publishDate}
+---
+Anuncio generado con AnunciosIA Pro`;
+        }
+
+        function exportToWord() {
+            const content = `
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Anuncio Clasificado</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
+                        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+                        h2 { color: #34495e; margin-top: 25px; }
+                        .price { font-size: 24px; font-weight: bold; color: #27ae60; margin: 15px 0; }
+                        .contact-info { background-color: #ecf0f1; padding: 15px; border-left: 4px solid #3498db; margin: 20px 0; }
+                        ul { padding-left: 20px; }
+                        .call-to-action { background-color: #e8f4fd; padding: 15px; border-radius: 5px; text-align: center; font-weight: bold; margin: 20px 0; }
+                        .footer { text-align: center; margin-top: 30px; color: #7f8c8d; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${generatedAdData.title}</h1>
+                    <p style="font-size: 16px; color: #7f8c8d; font-style: italic;">${generatedAdData.subtitle}</p>
+                    
+                    <div class="price">${generatedAdData.price} <span style="font-size: 14px; color: #7f8c8d;">(${generatedAdData.priceNote})</span></div>
+                    
+                    <h2>Descripción</h2>
+                    <p>${generatedAdData.description}</p>
+                    
+                    <h2>Características Destacadas</h2>
+                    <ul>
+                        ${generatedAdData.features.map(feature => `<li>${feature}</li>`).join('')}
+                    </ul>
+                    
+                    <h2>Ubicación</h2>
+                    <p>📍 ${generatedAdData.location}</p>
+                    
+                    <div class="contact-info">
+                        <h2 style="margin-top: 0;">Información de Contacto</h2>
+                        <p><strong>Nombre:</strong> ${generatedAdData.contactName}</p>
+                        <p><strong>Teléfono:</strong> ${generatedAdData.contactPhone}</p>
+                        <p><strong>Fecha de publicación:</strong> ${generatedAdData.publishDate}</p>
+                    </div>
+                    
+                    <div class="call-to-action">
+                        ${generatedAdData.callToAction}
+                    </div>
+                    
+                    <div class="footer">
+                        Anuncio generado con AnunciosIA Pro<br>
+                        Sistema inteligente de creación de anuncios clasificados
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', content], {
+                type: 'application/msword'
+            });
+
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `anuncio_${generatedAdData.formData.category.replace(/\s+/g, '_')}.doc`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            alert('¡Anuncio exportado a Word exitosamente!');
+        }
+
+        function downloadTxt() {
+            const adText = formatAdText();
+            
+            const blob = new Blob([adText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `anuncio_${generatedAdData.formData.category.replace(/\s+/g, '_')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function shareAd() {
+            if (navigator.share) {
+                navigator.share({
+                    title: generatedAdData.title,
+                    text: formatAdText(),
+                    url: window.location.href
+                });
+            } else {
+                copyToClipboard();
+                alert('Anuncio copiado al portapapeles para compartir');
+            }
+        }
+
+        function createNew() {
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('formSection').classList.remove('hidden');
+            document.getElementById('adForm').reset();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Efectos visuales adicionales
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animar elementos al hacer scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.card-shadow').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
+
